@@ -23,6 +23,10 @@ void setup() {
  const byte interruptInner = 11; //Grey, EINT0
  pinMode(interruptInner, INPUT_PULLDOWN);
  attachInterrupt(digitalPinToInterrupt(interruptInner), innerSensor, HIGH);
+
+ SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
+ __DSB();
+ __WFI();
 }
 
 void (outerSensor){

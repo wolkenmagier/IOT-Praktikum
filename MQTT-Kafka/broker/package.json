@@ -1,0 +1,12 @@
+{
+  "name": "broker-iot",
+  "version": "1.0.0",
+  "description": "mqtt broker",
+  "author": "Rehan Ahmed, Anees Tahir",
+  "license": "MIT",
+  "main": "broker.js",
+  "dependencies": {
+    "mqtt": "*",
+    "mosca": "*"
+  }
+}

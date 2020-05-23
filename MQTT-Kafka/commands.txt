@@ -1,0 +1,12 @@
+brew install mosquitto
+/usr/local/sbin/mosquitto -c /usr/local/etc/mosquitto/mosquitto.conf
+
+brew cask install java
+brew install kafka
+
+zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties & kafka-server-start /usr/local/etc/kafka/server.properties
+kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic number
+
+kafka-console-producer --broker-list localhost:9092 --topic number
+
+kafka-console-consumer --bootstrap-server localhost:9092 --topic number --from-beginning

@@ -1,0 +1,22 @@
+version: '3'
+services:
+
+  broker:
+    build: ./broker
+    ports:
+      - "1883:1883"
+    restart: always
+
+  producer:
+    build: ./producer
+    network_mode: host
+    restart: always
+    depends_on:
+      - broker
+
+  subscriber:
+    build: ./subscriber
+    network_mode: host
+    restart: always
+    depends_on:
+      - broker

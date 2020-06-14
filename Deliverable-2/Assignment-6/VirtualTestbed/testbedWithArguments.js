@@ -154,6 +154,7 @@ process.on('uncaughtException', function (exception) {
 });
 
 if(myArgs.mode == 'kafka'){
+	console.log("Enabled Kafka mode.")
 	try {
 	  const Consumer = kafka.Consumer;
 	  const client = new kafka.KafkaClient({kafkaHost: '138.246.232.197:9092'});

@@ -21,6 +21,9 @@ unsigned long lastInterrupt = 0;
 //}
 
 void out(){
+  if(millis() - lastInterrupt > 500){
+    state = 0;
+  }
   if (millis() - lastInterrupt > 10){
     if(state == 0){
       state = 1;
@@ -51,7 +54,9 @@ void out(){
 }
 
 void in(){
-  
+  if(millis() - lastInterrupt > 500){
+    state = 0;
+  }
   if (millis() - lastInterrupt > 10){
     if(state == 0){
       state = 2;

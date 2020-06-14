@@ -36,7 +36,7 @@ void peekIntoRoom(uint8_t param){
       digitalWrite(triggerOut,HIGH);
       mydelay(50);
       digitalWrite(triggerOut,LOW);
-      mydelay(50);
+      mydelay(500);
       param--;
     }
 }

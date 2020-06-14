@@ -1,0 +1,12 @@
+{
+  "name": "producer-iot",
+  "version": "1.0.0",
+  "description": "iot producer",
+  "author": "Rehan Ahmed, Anees Tahir",
+  "license": "MIT",
+  "main": "app.js",
+  "dependencies": {
+    "mqtt": "*",
+    "kafka-node": "*"
+  }
+}

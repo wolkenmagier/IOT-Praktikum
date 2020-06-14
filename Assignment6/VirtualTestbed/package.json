@@ -1,0 +1,14 @@
+{
+  "name": "Assignment6",
+  "version": "1.0.0",
+  "description": "Assignment6",
+  "author": "Rehan Ahmed, Anees Tahir",
+  "license": "MIT",
+  "main": "testbed.js",
+  "dependencies": {
+    "mqtt": "*",
+    "serialport": "*",
+    "minimist": "*",
+    "kafka-node": "*"
+  }
+}

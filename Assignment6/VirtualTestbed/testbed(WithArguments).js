@@ -2,6 +2,8 @@ const SerialPort = require('serialport');
 const ConsoleReader = require('readline');
 const fs = require('fs');
 const readline = require('readline');
+const minimist = require('minimist');
+const kafka = require('kafka-node');
 
 //start of MQTT connection code
 var mqtt    = require('mqtt');
@@ -24,19 +26,24 @@ const parser = new Readline();
 
 var first=true;
 
-var myArgs=process.argv.slice(2);
+let myArgs = minimist(process.argv.slice(2), {
+    alias: {
+        s: 'serial',
+        f: 'file',
+        m: 'mode'
+    },
+    default: {
+        mode: "interactive"
+    },
+});
+
 console.log('myArgs: ', myArgs);
-if (myArgs.length==0){
+if (myArgs.serial==undefined){
 	console.log("Error: serial port not specified.");
 	process.abort();
 }
 
-if (myArgs.length>2){
-	console.log("Error: too many arguments");
-	process.abort();
-}
-
-const port = new SerialPort(myArgs[0]);
+const port = new SerialPort(myArgs.serial);
 
 const rl = ConsoleReader.createInterface({
   input: process.stdin,
@@ -63,9 +70,9 @@ rl.on('line', (input) => {
 
 //If only the serial port is given, send current time only.
 //If a file name is given, open file and read the commands and set he time to the time of the first command - 30 seconds
-if (myArgs.length==2){
+if (myArgs.file != undefined){
 	//read and process file given in myArgs[1]
-	processFile(myArgs[1],port);
+	processFile(myArgs.file, port);
 } else {
 	sendCurrentTime(port);
 }
@@ -145,3 +152,34 @@ process.on('uncaughtException', function (exception) {
 	// if you are on production, maybe you can send the exception details to your
 	// email as well ?
 });
+
+if(myArgs.mode == 'kafka'){
+	try {
+	  const Consumer = kafka.Consumer;
+	  const client = new kafka.KafkaClient({kafkaHost: '138.246.232.197:9092'});
+
+	  let consumer = new Consumer(
+	    client,
+	    [{ topic: "01_06_020", partition: 0 }],
+	    {
+	    	groupId: 'group15',
+	      autoCommit: true,
+	      fetchMaxWaitMs: 1000,
+	      encoding: 'utf8',
+	      fromOffset: false
+	    }
+	  );
+
+	  consumer.on('message', async function(message) {
+	    port.write(message.value);
+	  })
+
+	  consumer.on('error', function(err) {
+	    console.log('kafka-error: ', err);
+	  });
+
+	}
+	catch(e) {
+	  console.log(e);
+	}
+}

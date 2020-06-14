@@ -6,9 +6,10 @@
   "license": "MIT",
   "main": "testbed.js",
   "dependencies": {
-    "mqtt": "*",
-    "serialport": "*",
+    "ci": "^1.0.0",
+    "kafka-node": "*",
     "minimist": "*",
-    "kafka-node": "*"
+    "mqtt": "*",
+    "serialport": "*"
   }
 }

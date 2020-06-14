@@ -1,10 +1,7 @@
 volatile bool inFlag=false, outFlag=false;
-volatile uint8_t count = 0;
 int state = 0;
-const byte interruptOuter = 9; //Grey, EINT2
-const byte interruptInner = 11; //Grey, EINT7
 int block = 0;
-unsigned long lastInterrupt;
+unsigned long lastInterrupt = 0;
 //void out(){
 //  if (inFlag) {
 //    count--;
@@ -27,9 +24,6 @@ void out(){
   if (millis() - lastInterrupt > 10){
     if(state == 0){
       state = 1;
-      Serial.print("Person Entering");
-      Serial.print(" - Block:");
-      Serial.println(block);
       lastInterrupt = millis();
 //      REG_EIC_INTFLAG = EIC_INTFLAG_EXTINT2;
 //      REG_EIC_INTFLAG = EIC_INTFLAG_EXTINT7;
@@ -39,9 +33,6 @@ void out(){
         count--;
         state = 0;
         block = 1;
-        Serial.print("Person Exited");
-        Serial.print(" - Block:");
-        Serial.println(block);
         lastInterrupt = millis();
 //        REG_EIC_INTFLAG = EIC_INTFLAG_EXTINT2;
 //        REG_EIC_INTFLAG = EIC_INTFLAG_EXTINT7;
@@ -60,12 +51,10 @@ void out(){
 }
 
 void in(){
+  
   if (millis() - lastInterrupt > 10){
     if(state == 0){
       state = 2;
-      Serial.print("Person Exiting");
-      Serial.print(" - Block:");
-      Serial.println(block);
       lastInterrupt = millis();
 //      REG_EIC_INTFLAG = EIC_INTFLAG_EXTINT2;
 //      REG_EIC_INTFLAG = EIC_INTFLAG_EXTINT7;
@@ -75,9 +64,6 @@ void in(){
         block = 1;
         count++;
         state = 0;
-        Serial.print("Person Entered");
-        Serial.print(" - Block:");
-        Serial.println(block);
         lastInterrupt = millis();
 //        REG_EIC_INTFLAG = EIC_INTFLAG_EXTINT2;
 //        REG_EIC_INTFLAG = EIC_INTFLAG_EXTINT7;

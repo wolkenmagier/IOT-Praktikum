@@ -8,11 +8,11 @@ try {
     client,
     [{ topic: "01_06_020", partition: 0 }],
     {
-    	groupId: 'group15',
+    	groupId: 'group1cx',
       autoCommit: true,
       fetchMaxWaitMs: 1000,
       encoding: 'utf8',
-      fromOffset: false
+      fromOffset: "earliest"
     }
   );
 

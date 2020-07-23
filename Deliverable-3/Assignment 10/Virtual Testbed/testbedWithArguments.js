@@ -4,6 +4,7 @@ const fs = require('fs');
 const readline = require('readline');
 const minimist = require('minimist');
 const kafka = require('kafka-node');
+const http = require('http');
 
 //start of MQTT connection code
 var mqtt    = require('mqtt');
@@ -19,6 +20,8 @@ mqttclient.on("connect",function(){
 	console.log("connected to MQTT broker");
 })
 //end of MQTT connection code.
+
+
 
 const Readline = SerialPort.parsers.Readline;
 const parser = new Readline();
@@ -68,6 +71,7 @@ rl.on('line', (input) => {
 });
 
 
+
 //If only the serial port is given, send current time only.
 //If a file name is given, open file and read the commands and set he time to the time of the first command - 30 seconds
 if (myArgs.file != undefined){
@@ -75,6 +79,22 @@ if (myArgs.file != undefined){
 	processFile(myArgs.file, port);
 } else {
 	sendCurrentTime(port);
+}
+
+
+
+//function to send count data to IOT Platform.
+function sendtoIOT(sensorName, count, timestamp){
+  	var payload = {
+   		"username": "group15"
+ 	};
+ 	payload[sensorName] = count
+ 	payload['device_id'] = 35
+ 	payload['timestamp'] = timestamp
+
+	payload = JSON.stringify(payload);
+	mqttclient.publish( '18_35', payload );
+	console.log("Message sent to MQTT broker")
 }
 
 
@@ -88,16 +108,7 @@ function handleDeviceString(str){
   strarray = str.split(":")
 
 	if(strarray[0]=="SEND"){
-		var payload = {
-	 		"username": "group15",
-	 		"sensor15": strarray[2] * 1,
-	 		"device_id": 35,
-	 		"timestamp": strarray[1] * 1000
-		};
-
-		payload = JSON.stringify(payload);
-		mqttclient.publish( '18_35', payload );
-		console.log("Message sent to MQTT broker")
+		sendtoIOT("sensor15", strarray[2] * 1, strarray[1] * 1000)
 	}
 }
 
@@ -153,6 +164,8 @@ process.on('uncaughtException', function (exception) {
 	// email as well ?
 });
 
+
+//Run if Kakfa mode is enabled.
 if(myArgs.mode == 'kafka'){
 	console.log("Enabled Kafka mode.")
 	try {
@@ -171,7 +184,17 @@ if(myArgs.mode == 'kafka'){
 	    }
 	  );
 
+	  var firstLine = true;
 	  consumer.on('message', async function(message) {
+	  	if(firstLine){
+	  		lineArray = message.split(":")
+	  		time = lineArray[0] - 30;
+	  		timeString = "0:0:"+String(time)+"\n";
+	  		port.write(timeString);
+	  		firstLine = false;
+	  	}
+
+	  	message = message + "\n";
 	    port.write(message.value);
 	  })
 
@@ -185,10 +208,22 @@ if(myArgs.mode == 'kafka'){
 	}
 }
 
-//function to retrieve model from Model Manager.
+
+
+//function to retrieve models from Model Manager.
+function getModel(fileName, url){
+	const file = fs.createWriteStream(fileName);
+	const request = http.get(url, function(response) {
+  		response.pipe(file);
+});
+
+}
 let intervalID = setInterval(function() {
-	//implement fetchind model.
+	getModel('arima.fmdl', "http://ec2-18-206-214-246.compute-1.amazonaws.com:5000/download?model=arimamodel.fmdl");
+	getModel('asd', 'asd');
+	getModel('asd', 'asd');
 }, 604800000); //run once every week.
+
 
 //Begin code for forecaster.py
 let {PythonShell} = require('python-shell');
